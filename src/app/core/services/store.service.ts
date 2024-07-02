@@ -9,7 +9,11 @@ export class StoreService {
   exchangePairSubject: BehaviorSubject<ExchangeRate> =
     new BehaviorSubject<ExchangeRate>({} as ExchangeRate);
   exchangePair$ = this.exchangePairSubject.asObservable();
-  exchangePairsList!: ExchangeRate[];
+
+  exchangePairsListSubject = new BehaviorSubject<ExchangeRate[]>(
+    [] as ExchangeRate[]
+  );
+  exchangePairsList$ = this.exchangePairsListSubject.asObservable();
 
   constructor() {}
 }

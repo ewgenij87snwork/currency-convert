@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  gap: 40px;
+  color: rgba(0, 0, 0, 0.8);
+
+  .currency-flag {
+    border-radius: 3px;
+    outline: 1px solid rgb(35, 65, 119);
+  }
+
+  .currency-name {
+    color: rgba(0, 0, 0, 0.29);
+  }
+}

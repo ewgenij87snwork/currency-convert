@@ -1,0 +1,11 @@
+{
+  "/api/**": {
+    "target": "https://bank.gov.ua/NBU_Exchange/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}

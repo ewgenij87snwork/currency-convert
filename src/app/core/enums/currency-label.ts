@@ -39,7 +39,6 @@ export enum CurrencyLabel {
   NZD = 'NZD',
   PKR = 'PKR',
   PLN = 'PLN',
-  RND = 'RND',
   RON = 'RON',
   RSD = 'RSD',
   RUB = 'RUB',
@@ -56,10 +55,5 @@ export enum CurrencyLabel {
   USD = 'USD',
   UZS = 'UZS',
   VND = 'VND',
-  XAG = 'XAG',
-  XAU = 'XAU',
-  XDR = 'XDR',
-  XPD = 'XPD',
-  XPT = 'XPT',
   ZAR = 'ZAR'
 }

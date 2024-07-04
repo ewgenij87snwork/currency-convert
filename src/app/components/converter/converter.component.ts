@@ -20,6 +20,8 @@ import { map, startWith } from 'rxjs/operators';
 import { CurrencyLabel } from '../../core/enums/currency-label';
 import { ExchangeRate } from '../../core/interfaces/exchange-rate';
 import { StoreService } from '../../core/services/store.service';
+import AmountValidator from '../../core/validators/amount-validator';
+import CurrencyLabelValidator from '../../core/validators/currency-label-validator';
 
 @Component({
   selector: 'app-converter',
@@ -60,8 +62,8 @@ export class ConverterComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.converterForm = this.fb.group({
-      firstCurrencyAmount: 0,
-      firstCurrencyLabel: CurrencyLabel.USD,
+      firstCurrencyAmount: [0, [AmountValidator]],
+      firstCurrencyLabel: [CurrencyLabel.USD, CurrencyLabelValidator],
       secondCurrencyAmount: 0,
       secondCurrencyLabel: CurrencyLabel.UAH
     });
@@ -76,6 +78,7 @@ export class ConverterComponent implements OnInit {
 
     this.selectCurrency(CurrencyLabel.USD);
     this.checkCurrencyLabelValidity();
+    this.setupControlValidation();
   }
 
   selectCurrency(currencyLabel: string) {
@@ -118,5 +121,15 @@ export class ConverterComponent implements OnInit {
         this.isCurrencyLabelValid = this.currencyLabels.includes(value);
       }
     );
+  }
+
+  private setupControlValidation() {
+    Object.keys(this.converterForm.controls).forEach(field => {
+      const control = this.converterForm.get(field);
+      control?.valueChanges.subscribe(() => {
+        control.markAsTouched({ onlySelf: true });
+        control.updateValueAndValidity({ emitEvent: false });
+      });
+    });
   }
 }

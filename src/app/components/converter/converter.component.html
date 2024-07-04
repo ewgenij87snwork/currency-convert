@@ -13,9 +13,11 @@
             placeholder="Enter amount" />
           <mat-error
             *ngIf="
-              converterForm.controls['firstCurrencyAmount'].hasError('required')
+              converterForm.controls['firstCurrencyAmount'].hasError(
+                'notAmount'
+              )
             ">
-            Enter amount
+            Incorrect amount
           </mat-error>
         </mat-form-field>
 
@@ -45,6 +47,14 @@
               {{ currencyLabel }}
             </mat-option>
           </mat-autocomplete>
+          <mat-error
+            *ngIf="
+              converterForm.controls['firstCurrencyLabel'].hasError(
+                'invalidCurrencyLabel'
+              )
+            ">
+            Select Currency
+          </mat-error>
         </mat-form-field>
       </div>
     </mat-card-content>

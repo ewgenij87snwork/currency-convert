@@ -3,60 +3,69 @@
     <mat-card-header>
       <mat-card-title>Exchange Calculator</mat-card-title>
     </mat-card-header>
-
     <mat-card-content>
       <div class="currency-wrapper">
-        <mat-form-field class="currency-amount">
-          <input
-            formControlName="firstCurrencyAmount"
-            matInput
-            placeholder="Enter amount" />
-          <mat-error
-            *ngIf="
-              converterForm.controls['firstCurrencyAmount'].hasError(
-                'notAmount'
-              )
-            ">
-            Incorrect amount
-          </mat-error>
-        </mat-form-field>
+        <ng-container *ngFor="let currency of currencyControls; let i = index">
+          <div [formGroupName]="'currency' + i" class="currency">
+            <mat-form-field class="currency-amount">
+              <input
+                formControlName="amount"
+                matInput
+                placeholder="Enter amount" />
+              <mat-error
+                *ngIf="
+                  converterForm
+                    .get('currency' + i + '.amount')
+                    ?.hasError('notAmount')
+                "
+                >Invalid Amount
+              </mat-error>
+            </mat-form-field>
 
-        <mat-form-field class="currency-label">
-          <input
-            (keyup)="onEnterPress($event)"
-            [matAutocomplete]="auto"
-            formControlName="firstCurrencyLabel"
-            matInput
-            placeholder="Select currency" />
-          <mat-icon
-            *ngIf="isCurrencyLabelValid"
-            class="currency-flag currency-flag-{{
-              converterForm.controls['firstCurrencyLabel'].value.toLowerCase()
-            }}">
-          </mat-icon>
-
-          <mat-autocomplete #auto="matAutocomplete">
-            <mat-option
-              *ngFor="let currencyLabel of filteredCurrencyLabels$ | async"
-              [value]="currencyLabel"
-              (click)="selectCurrency(currencyLabel)">
+            <mat-form-field class="currency-label">
+              <input
+                (keyup)="onEnterPress($event, i)"
+                [matAutocomplete]="auto"
+                formControlName="label"
+                matInput
+                placeholder="Select currency" />
               <mat-icon
+                *ngIf="currency.label.isCurrencyLabelValid"
                 class="currency-flag currency-flag-{{
-                  currencyLabel.toLowerCase()
-                }}"></mat-icon>
-              {{ currencyLabel }}
-            </mat-option>
-          </mat-autocomplete>
-          <mat-error
-            *ngIf="
-              converterForm.controls['firstCurrencyLabel'].hasError(
-                'invalidCurrencyLabel'
-              )
-            ">
-            Select Currency
-          </mat-error>
-        </mat-form-field>
+                  (
+                    converterForm.get('currency' + i + '.label')?.value || 'uah'
+                  ).toLowerCase()
+                }}">
+              </mat-icon>
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option
+                  (click)="selectLabel(label, i)"
+                  *ngFor="let label of currency.label.filteredLabels$ | async"
+                  [value]="label">
+                  <mat-icon
+                    class="currency-flag currency-flag-{{
+                      label.toLowerCase()
+                    }}"></mat-icon>
+                  {{ label }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error
+                *ngIf="
+                  converterForm
+                    .get('currency' + i + '.label')
+                    ?.hasError('invalidCurrencyLabel')
+                ">
+                Invalid Currency
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </ng-container>
       </div>
     </mat-card-content>
+    <button (click)="addCurrency()" mat-raised-button type="button">
+      <mat-icon>expand_more</mat-icon>
+      <mat-icon style="transform: rotate(90deg)">double_arrow</mat-icon>
+      <mat-icon>expand_more</mat-icon>
+    </button>
   </mat-card>
 </form>

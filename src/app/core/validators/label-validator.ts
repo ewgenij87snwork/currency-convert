@@ -3,10 +3,11 @@ import { CurrencyLabel } from '../enums/currency-label';
 
 const availableCurrencies = Object.values(CurrencyLabel);
 
-export default function CurrencyLabelValidator(control: AbstractControl) {
+export default function LabelValidator(control: AbstractControl) {
   if (
     !control.value ||
-    !availableCurrencies.includes(control.value.toUpperCase())
+    (control.value.length > 2 &&
+      !availableCurrencies.includes(control.value.toUpperCase()))
   )
     return { invalidCurrencyLabel: true };
 

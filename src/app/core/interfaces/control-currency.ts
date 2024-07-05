@@ -1,11 +1,8 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { CurrencyLabel } from '../enums/currency-label';
 
 export interface ControlCurrency {
-  amount: {
-    current$: Observable<number>;
-    amountValue: number;
-  };
+  amount: number;
   label: {
     filteredLabels$: BehaviorSubject<CurrencyLabel[]>;
     selectedLabel: string;

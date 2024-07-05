@@ -23,12 +23,20 @@ import {
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import { BehaviorSubject, debounceTime, distinctUntilChanged } from 'rxjs';
+import {
+  BehaviorSubject,
+  asyncScheduler,
+  debounceTime,
+  distinctUntilChanged,
+  observeOn,
+  of
+} from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { CurrencyLabel } from '../../core/enums/currency-label';
 import { ControlCurrency } from '../../core/interfaces/control-currency';
 import { CurrencyFormGroup } from '../../core/interfaces/currency-form-group';
 import { ExchangeRate } from '../../core/interfaces/exchange-rate';
+import { CalculatorService } from '../../core/services/calculator.service';
 import { StoreService } from '../../core/services/store.service';
 import AmountValidator from '../../core/validators/amount-validator';
 import LabelValidator from '../../core/validators/label-validator';
@@ -61,7 +69,9 @@ export class ConverterComponent implements OnInit {
   @ViewChildren(MatAutocomplete) autocompletes!: QueryList<MatAutocomplete>;
   @ViewChildren(MatAutocompleteTrigger)
   autocompleteTriggers!: QueryList<MatAutocompleteTrigger>;
-
+  trackByIndex(index: number) {
+    return index;
+  }
   currencyControls: ControlCurrency[] = [];
   converterForm: FormGroup;
   currencyLabels = Object.values(CurrencyLabel);
@@ -70,6 +80,7 @@ export class ConverterComponent implements OnInit {
   constructor(
     private storeService: StoreService,
     private fb: FormBuilder,
+    private calculatorService: CalculatorService,
     private destroyRef: DestroyRef
   ) {
     this.converterForm = this.fb.group({});
@@ -87,17 +98,14 @@ export class ConverterComponent implements OnInit {
     this.addCurrency(CurrencyLabel.UAH, 1);
   }
 
-  addCurrency(initialLabel?: CurrencyLabel, initialAmount = 0): void {
+  addCurrency(initialLabel?: CurrencyLabel, initialAmount = 1): void {
     const newCurrency: ControlCurrency = {
-      amount: {
-        current$: new BehaviorSubject<number>(0),
-        amountValue: initialAmount
-      },
+      amount: initialAmount,
       label: {
         filteredLabels$: new BehaviorSubject<CurrencyLabel[]>(
           this.currencyLabels
         ),
-        selectedLabel: initialLabel || CurrencyLabel.CHF,
+        selectedLabel: initialLabel || CurrencyLabel.AUD,
         isCurrencyLabelValid: true
       }
     };
@@ -106,7 +114,7 @@ export class ConverterComponent implements OnInit {
 
     const currencyIndex = this.currencyControls.length - 1;
     const currencyGroup: FormGroup<CurrencyFormGroup> = this.fb.group({
-      amount: [newCurrency.amount.amountValue, AmountValidator],
+      amount: [newCurrency.amount, AmountValidator],
       label: [newCurrency.label.selectedLabel, LabelValidator]
     });
 
@@ -114,30 +122,54 @@ export class ConverterComponent implements OnInit {
 
     this.setupControlValidation(currencyGroup);
 
-    newCurrency.amount.current$ = currencyGroup.controls[
-      'amount'
-    ].valueChanges.pipe(
-      distinctUntilChanged(),
-      startWith(
-        currencyGroup.controls['amount'].value ?? newCurrency.amount.amountValue
-      ),
-      map(value =>
-        typeof value === 'number' ? value : newCurrency.amount.amountValue
-      ),
-      takeUntilDestroyed(this.destroyRef)
-    );
+    currencyGroup.controls['amount'].valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        startWith(currencyGroup.controls['amount'].value ?? newCurrency.amount),
+        map(value => {
+          !!value && (this.currencyControls[currencyIndex].amount = value);
+          if (
+            this.currencyListData.length &&
+            this.currencyListData.length > 0 &&
+            this.currencyControls.length > 1
+          ) {
+            this.currencyControls = this.calculatorService.convert(
+              this.currencyControls,
+              currencyIndex,
+              this.currencyListData
+            );
+          }
+          this.updateFormValues();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
 
     const labelControl = currencyGroup.controls['label'];
     labelControl.valueChanges
-      .pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => {
-        this.currencyControls[currencyIndex].label.isCurrencyLabelValid =
-          !!value && this.currencyLabels.includes(value as CurrencyLabel);
-        this.currencyControls[currencyIndex].label.filteredLabels$.next(
-          this.getAvailableCurrencies(value as CurrencyLabel)
-        );
-      });
-    this.selectLabel(initialLabel || CurrencyLabel.CHF, currencyIndex);
+      .pipe(
+        distinctUntilChanged(),
+        map(label => {
+          if (label) {
+            this.currencyControls[currencyIndex].label.isCurrencyLabelValid =
+              this.currencyLabels.includes(label as CurrencyLabel);
+            this.currencyControls[currencyIndex].label.selectedLabel = label;
+            this.currencyControls[currencyIndex].label.filteredLabels$.next(
+              this.getAvailableCurrencies(label as CurrencyLabel)
+            );
+          }
+          this.currencyControls = this.calculatorService.convert(
+            this.currencyControls,
+            currencyIndex,
+            this.currencyListData
+          );
+          this.updateFormValues();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
+
+    this.selectLabel(initialLabel || CurrencyLabel.AUD, currencyIndex);
   }
 
   selectLabel(label: CurrencyLabel, i: number) {
@@ -186,5 +218,46 @@ export class ConverterComponent implements OnInit {
           control?.updateValueAndValidity();
         });
     });
+  }
+
+  private manageFocus() {
+    const activeElement = document.activeElement as HTMLElement;
+
+    of(null)
+      .pipe(observeOn(asyncScheduler))
+      .subscribe(() => {
+        if (activeElement) {
+          activeElement.focus();
+        }
+      });
+  }
+
+  private updateFormValues() {
+    this.currencyControls.forEach((currency, index) => {
+      const currencyGroup = this.converterForm.get(
+        `currency${index}`
+      ) as FormGroup;
+      if (currencyGroup) {
+        const currentAmountValue = currency.amount;
+        const currentAmountFormValue = currencyGroup.get('amount')?.value;
+
+        const currentLabelValue = currency.label.selectedLabel;
+        const currentLabelFormValue = currencyGroup.get('label')?.value;
+
+        if (currentAmountFormValue !== currentAmountValue) {
+          currencyGroup.controls['amount'].setValue(currentAmountValue, {
+            emitEvent: false
+          });
+        }
+
+        if (currentLabelFormValue !== currentLabelValue) {
+          currencyGroup.controls['label'].setValue(currentLabelValue, {
+            emitEvent: false
+          });
+        }
+      }
+    });
+
+    this.manageFocus();
   }
 }

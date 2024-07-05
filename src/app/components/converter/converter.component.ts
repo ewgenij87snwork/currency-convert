@@ -69,9 +69,6 @@ export class ConverterComponent implements OnInit {
   @ViewChildren(MatAutocomplete) autocompletes!: QueryList<MatAutocomplete>;
   @ViewChildren(MatAutocompleteTrigger)
   autocompleteTriggers!: QueryList<MatAutocompleteTrigger>;
-  trackByIndex(index: number) {
-    return index;
-  }
   currencyControls: ControlCurrency[] = [];
   converterForm: FormGroup;
   currencyLabels = Object.values(CurrencyLabel);
@@ -86,21 +83,32 @@ export class ConverterComponent implements OnInit {
     this.converterForm = this.fb.group({});
   }
 
+  trackByIndex(index: number) {
+    return index;
+  }
+
   ngOnInit(): void {
     this.storeService.exchangePairsList$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         if (data && data.length > 0) {
           this.currencyListData = data;
+
+          this.addCurrency(CurrencyLabel.USD, 1);
+          this.addCurrency(CurrencyLabel.UAH, 1);
+          this.converterForm.get('currency' + 0 + '.amount')?.setValue(1);
+          this.calculatorService.convert(
+            this.currencyControls,
+            0,
+            this.currencyListData
+          );
         }
       });
-    this.addCurrency(CurrencyLabel.USD, 1);
-    this.addCurrency(CurrencyLabel.UAH, 1);
   }
 
-  addCurrency(initialLabel?: CurrencyLabel, initialAmount = 1): void {
+  addCurrency(initialLabel?: CurrencyLabel, initialAmount?: number): void {
     const newCurrency: ControlCurrency = {
-      amount: initialAmount,
+      amount: initialAmount || 1,
       label: {
         filteredLabels$: new BehaviorSubject<CurrencyLabel[]>(
           this.currencyLabels

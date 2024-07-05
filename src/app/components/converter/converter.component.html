@@ -1,4 +1,4 @@
-<form [formGroup]="converterForm">
+<form [formGroup]="converterForm" *ngIf="currencyListData.length > 0">
   <mat-card>
     <mat-card-header>
       <mat-card-title>Exchange Calculator</mat-card-title>

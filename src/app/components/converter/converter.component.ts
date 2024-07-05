@@ -127,9 +127,8 @@ export class ConverterComponent implements OnInit {
         distinctUntilChanged(),
         startWith(currencyGroup.controls['amount'].value ?? newCurrency.amount),
         map(value => {
-          !!value && (this.currencyControls[currencyIndex].amount = value);
+          this.currencyControls[currencyIndex].amount = value;
           if (
-            this.currencyListData.length &&
             this.currencyListData.length > 0 &&
             this.currencyControls.length > 1
           ) {

@@ -30,7 +30,9 @@ export class CalculatorService {
         }
         return {
           ...currency,
-          amount: this.trimToTwoDecimalPlaces(sourceAmount * rate)
+          amount: sourceAmount
+            ? this.trimToTwoDecimalPlaces(sourceAmount * rate)
+            : currency.amount
         };
       }
     });

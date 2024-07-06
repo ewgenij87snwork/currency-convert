@@ -123,7 +123,10 @@ export class ConverterComponent implements OnInit {
     const currencyIndex = this.currencyControls.length - 1;
     const currencyGroup: FormGroup<CurrencyFormGroup> = this.fb.group({
       amount: [newCurrency.amount, AmountValidator],
-      label: [newCurrency.label.selectedLabel, LabelValidator]
+      label: [
+        newCurrency.label.selectedLabel,
+        LabelValidator(newCurrency.label.filteredLabels$)
+      ]
     });
 
     this.converterForm.addControl(`currency${currencyIndex}`, currencyGroup);
@@ -135,7 +138,7 @@ export class ConverterComponent implements OnInit {
         distinctUntilChanged(),
         startWith(currencyGroup.controls['amount'].value ?? newCurrency.amount),
         map(value => {
-          this.currencyControls[currencyIndex].amount = value;
+          !!value && (this.currencyControls[currencyIndex].amount = value);
           if (
             this.currencyListData.length > 0 &&
             this.currencyControls.length > 1
@@ -251,13 +254,19 @@ export class ConverterComponent implements OnInit {
         const currentLabelValue = currency.label.selectedLabel;
         const currentLabelFormValue = currencyGroup.get('label')?.value;
 
-        if (currentAmountFormValue !== currentAmountValue) {
+        if (
+          currentAmountFormValue > 0 &&
+          currentAmountFormValue !== currentAmountValue
+        ) {
           currencyGroup.controls['amount'].setValue(currentAmountValue, {
             emitEvent: false
           });
         }
 
-        if (currentLabelFormValue !== currentLabelValue) {
+        if (
+          currentLabelFormValue.length > 0 &&
+          currentLabelFormValue !== currentLabelValue
+        ) {
           currencyGroup.controls['label'].setValue(currentLabelValue, {
             emitEvent: false
           });

@@ -74,8 +74,23 @@
         </ng-container>
       </div>
     </mat-card-content>
-    <button (click)="addCurrency()" mat-raised-button type="button">
-      <mat-icon svgIcon="expand"></mat-icon>
-    </button>
+    <div class="currency-buttons">
+      <button
+        (click)="removeCurrency()"
+        class="currency-buttons__button--remove"
+        mat-raised-button
+        type="button"
+        [disableRipple]="true">
+        <mat-icon svgIcon="expand"></mat-icon>
+      </button>
+      <button
+        (click)="addCurrency()"
+        class="currency-buttons__button--add"
+        mat-raised-button
+        type="button"
+        [disableRipple]="true">
+        <mat-icon svgIcon="expand"></mat-icon>
+      </button>
+    </div>
   </mat-card>
 </form>

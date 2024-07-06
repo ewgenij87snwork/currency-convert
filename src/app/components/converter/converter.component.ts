@@ -191,6 +191,19 @@ export class ConverterComponent implements OnInit {
     this.selectLabel(initialLabel || CurrencyLabel.AUD, currencyIndex);
   }
 
+  removeCurrency(): void {
+    if (this.currencyControls.length > 2) {
+      const lastIndex = this.currencyControls.length - 1;
+
+      this.currencyControls.splice(lastIndex, 1);
+
+      this.converterForm.removeControl(`currency${lastIndex}`);
+
+      this.updateExchangeRates();
+      this.updateFormValues();
+    }
+  }
+
   selectLabel(label: CurrencyLabel, i: number) {
     const labelControl = this.converterForm.get('currency' + i + '.label');
     if (labelControl && labelControl.valueChanges) {

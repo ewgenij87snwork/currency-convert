@@ -64,6 +64,9 @@
               </mat-error>
             </mat-form-field>
           </div>
+          <div *ngIf="i < currencyControls.length - 1" class="exchange-rate">
+            <span>{{ exchangeRates[i] }}</span>
+          </div>
         </ng-container>
       </div>
     </mat-card-content>

@@ -73,6 +73,7 @@ export class ConverterComponent implements OnInit {
   converterForm: FormGroup;
   currencyLabels = Object.values(CurrencyLabel);
   currencyListData: ExchangeRate[] = [];
+  exchangeRates: string[] = [];
 
   constructor(
     private storeService: StoreService,
@@ -148,6 +149,7 @@ export class ConverterComponent implements OnInit {
               currencyIndex,
               this.currencyListData
             );
+            this.updateExchangeRates();
           }
           this.updateFormValues();
         }),
@@ -173,6 +175,7 @@ export class ConverterComponent implements OnInit {
             currencyIndex,
             this.currencyListData
           );
+          this.updateExchangeRates();
           this.updateFormValues();
         }),
         takeUntilDestroyed(this.destroyRef)
@@ -240,6 +243,26 @@ export class ConverterComponent implements OnInit {
           activeElement.focus();
         }
       });
+  }
+
+  private updateExchangeRates(): void {
+    this.exchangeRates = [];
+    for (let i = 0; i < this.currencyControls.length - 1; i++) {
+      const fromCurrency = this.currencyControls[i].label.selectedLabel;
+      const toCurrency = this.currencyControls[i + 1].label.selectedLabel;
+      const rate = this.calculatorService.getRate(
+        fromCurrency,
+        toCurrency,
+        this.currencyListData
+      );
+      if (!isNaN(rate)) {
+        this.exchangeRates.push(
+          `1 ${fromCurrency} = ${this.calculatorService.trimToTwoDecimalPlaces(rate, 4)} ${toCurrency}`
+        );
+      } else {
+        this.exchangeRates.push(`Exchange rate not available`);
+      }
+    }
   }
 
   private updateFormValues() {

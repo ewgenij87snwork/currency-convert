@@ -39,7 +39,7 @@ export class CalculatorService {
   }
 
   // Recursive rate search
-  private getRate(
+  getRate(
     from: string,
     to: string,
     exchangeRates: ExchangeRate[],

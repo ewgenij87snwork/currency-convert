@@ -64,31 +64,36 @@
               </mat-error>
             </mat-form-field>
           </div>
-          <button
-            (click)="swapCurrencies(i)"
-            *ngIf="i < currencyControls.length - 1"
-            class="exchange-rate">
+          <div class="exchange-rate">
             <span>{{ exchangeRates[i] }}</span>
-            <mat-icon svgIcon="swap"></mat-icon>
-          </button>
+            <button
+              (click)="swapCurrencies(i)"
+              *ngIf="i < currencyControls.length - 1"
+              type="button">
+              <mat-icon
+                (click)="toggleSwapIcon(i)"
+                [class.clicked]="isSwapClicked[i]"
+                svgIcon="swap"></mat-icon>
+            </button>
+          </div>
         </ng-container>
       </div>
     </mat-card-content>
     <div class="currency-buttons">
       <button
         (click)="removeCurrency()"
+        [disableRipple]="true"
         class="currency-buttons__button--remove"
         mat-raised-button
-        type="button"
-        [disableRipple]="true">
+        type="button">
         <mat-icon svgIcon="expand"></mat-icon>
       </button>
       <button
         (click)="addCurrency()"
+        [disableRipple]="true"
         class="currency-buttons__button--add"
         mat-raised-button
-        type="button"
-        [disableRipple]="true">
+        type="button">
         <mat-icon svgIcon="expand"></mat-icon>
       </button>
     </div>

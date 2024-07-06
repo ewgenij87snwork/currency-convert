@@ -27,14 +27,7 @@ import {
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import {
-  BehaviorSubject,
-  asyncScheduler,
-  debounceTime,
-  distinctUntilChanged,
-  observeOn,
-  of
-} from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { CurrencyLabel } from '../../core/enums/currency-label';
 import { ControlCurrency } from '../../core/interfaces/control-currency';
@@ -80,6 +73,7 @@ export class ConverterComponent implements OnInit {
   currencyLabels = Object.values(CurrencyLabel);
   currencyListData: ExchangeRate[] = [];
   exchangeRates: string[] = [];
+  isSwapClicked = [false];
 
   constructor(
     private storeService: StoreService,
@@ -100,20 +94,24 @@ export class ConverterComponent implements OnInit {
       .subscribe(data => {
         if (data && data.length > 0) {
           this.currencyListData = data;
-
-          this.addCurrency(CurrencyLabel.USD, 1);
-          this.addCurrency(CurrencyLabel.UAH, 1);
-          this.converterForm.get('currency' + 0 + '.amount')?.setValue(1);
-          this.calculatorService.convert(
-            this.currencyControls,
-            0,
-            this.currencyListData
-          );
+          this.initializeCurrencies();
         }
       });
   }
 
+  initializeCurrencies(): void {
+    this.addCurrency(CurrencyLabel.USD, 1);
+    this.addCurrency(CurrencyLabel.UAH, 1);
+    this.converterForm.get('currency0.amount')?.setValue(1);
+    this.calculatorService.convert(
+      this.currencyControls,
+      0,
+      this.currencyListData
+    );
+  }
+
   addCurrency(initialLabel?: CurrencyLabel, initialAmount?: number): void {
+    if (this.currencyControls.length > 5) return;
     const newCurrency: ControlCurrency = {
       amount: initialAmount || 1,
       label: {
@@ -137,8 +135,6 @@ export class ConverterComponent implements OnInit {
     });
 
     this.converterForm.addControl(`currency${currencyIndex}`, currencyGroup);
-
-    this.setupControlValidation(currencyGroup);
 
     currencyGroup.controls['amount'].valueChanges
       .pipe(
@@ -173,7 +169,7 @@ export class ConverterComponent implements OnInit {
               this.currencyLabels.includes(label as CurrencyLabel);
             this.currencyControls[currencyIndex].label.selectedLabel = label;
             this.currencyControls[currencyIndex].label.filteredLabels$.next(
-              this.getAvailableCurrencies(label as CurrencyLabel)
+              this.getRelevantCurrencies(label as CurrencyLabel)
             );
           }
           this.currencyControls = this.calculatorService.convert(
@@ -189,6 +185,7 @@ export class ConverterComponent implements OnInit {
       .subscribe();
 
     this.selectLabel(initialLabel || CurrencyLabel.AUD, currencyIndex);
+    this.setupControlValidation(currencyGroup);
   }
 
   removeCurrency(): void {
@@ -207,18 +204,17 @@ export class ConverterComponent implements OnInit {
   selectLabel(label: CurrencyLabel, i: number) {
     const labelControl = this.converterForm.get('currency' + i + '.label');
     if (labelControl && labelControl.valueChanges) {
-      labelControl?.setValue(label, { emitEvent: false });
+      labelControl?.setValue(label);
       this.currencyControls[i].label.filteredLabels$.next(this.currencyLabels);
       labelControl?.valueChanges.pipe(
         startWith(''),
-        map(labelValue => this.getAvailableCurrencies(labelValue))
+        map(labelValue => this.getRelevantCurrencies(labelValue))
       );
     }
   }
 
   onEnterPress(event: Event, currencyIndex: number) {
     if (event instanceof KeyboardEvent && event.key === 'Enter') {
-      event.preventDefault();
       const autocompleteValue =
         this.autocompletes.toArray()[currencyIndex].options.first?.value;
 
@@ -230,7 +226,28 @@ export class ConverterComponent implements OnInit {
     }
   }
 
-  private getAvailableCurrencies(labelValue: CurrencyLabel): CurrencyLabel[] {
+  swapCurrencies(index: number): void {
+    if (index < 0 || index >= this.currencyControls.length - 1) {
+      return;
+    }
+
+    [this.currencyControls[index], this.currencyControls[index + 1]] = [
+      this.currencyControls[index + 1],
+      this.currencyControls[index]
+    ];
+
+    this.updateExchangeRates();
+    this.updateFormValues();
+  }
+
+  toggleSwapIcon(index: number): void {
+    if (!this.isSwapClicked[index]) {
+      this.isSwapClicked[index] = false;
+    }
+    this.isSwapClicked[index] = !this.isSwapClicked[index];
+  }
+
+  private getRelevantCurrencies(labelValue: CurrencyLabel): CurrencyLabel[] {
     return this.currencyLabels.filter(label =>
       label.toLowerCase().includes(labelValue.toLowerCase())
     );
@@ -252,32 +269,6 @@ export class ConverterComponent implements OnInit {
     });
   }
 
-  private manageFocus() {
-    const activeElement = document.activeElement as HTMLElement;
-
-    of(null)
-      .pipe(observeOn(asyncScheduler))
-      .subscribe(() => {
-        if (activeElement) {
-          activeElement.focus();
-        }
-      });
-  }
-
-  swapCurrencies(index: number): void {
-    if (index < 0 || index >= this.currencyControls.length - 1) {
-      return;
-    }
-
-    [this.currencyControls[index], this.currencyControls[index + 1]] = [
-      this.currencyControls[index + 1],
-      this.currencyControls[index]
-    ];
-
-    this.updateExchangeRates();
-    this.updateFormValues();
-  }
-
   private updateExchangeRates(): void {
     this.exchangeRates = [];
     for (let i = 0; i < this.currencyControls.length - 1; i++) {
@@ -290,10 +281,13 @@ export class ConverterComponent implements OnInit {
       );
       if (!isNaN(rate)) {
         this.exchangeRates.push(
-          `1 ${fromCurrency} = ${this.calculatorService.trimToTwoDecimalPlaces(rate, 4)} ${toCurrency}`
+          `1 ${fromCurrency} = ${this.calculatorService.trimToTwoDecimalPlaces(
+            rate,
+            4
+          )} ${toCurrency}`
         );
       } else {
-        this.exchangeRates.push(`Exchange rate not available`);
+        this.exchangeRates.push(`-`);
       }
     }
   }
@@ -329,7 +323,5 @@ export class ConverterComponent implements OnInit {
         }
       }
     });
-
-    this.manageFocus();
   }
 }

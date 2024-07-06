@@ -30,7 +30,7 @@ export class CalculatorService {
         }
         return {
           ...currency,
-          amount: sourceAmount
+          amount: this.trimZeros(sourceAmount)
             ? this.trimToTwoDecimalPlaces(sourceAmount * rate)
             : currency.amount
         };
@@ -100,5 +100,9 @@ export class CalculatorService {
   trimToTwoDecimalPlaces(value: number, digitsAfterPoint = 2): number {
     const factor = Math.pow(10, digitsAfterPoint);
     return Math.floor(value * factor) / factor;
+  }
+
+  private trimZeros(value: number): number {
+    return Number(value.toString().replace(/^0+/, '')) || 0;
   }
 }

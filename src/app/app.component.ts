@@ -3,6 +3,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { MatToolbar } from '@angular/material/toolbar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ConverterComponent } from './components/converter/converter.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { CurrencyLabel } from './core/enums/currency-label';
 import { ExchangeRate } from './core/interfaces/exchange-rate';
@@ -12,7 +13,7 @@ import { StoreService } from './core/services/store.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, MatToolbar, ConverterComponent],
+  imports: [HeaderComponent, MatToolbar, ConverterComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

@@ -13,7 +13,11 @@ import {
   MatAutocompleteTrigger,
   MatOption
 } from '@angular/material/autocomplete';
-import { MatButton } from '@angular/material/button';
+import {
+  MatButton,
+  MatIconButton,
+  MatMiniFabButton
+} from '@angular/material/button';
 import {
   MatCard,
   MatCardContent,
@@ -61,7 +65,9 @@ import LabelValidator from '../../core/validators/label-validator';
     MatCardContent,
     MatCardTitle,
     MatError,
-    MatButton
+    MatButton,
+    MatIconButton,
+    MatMiniFabButton
   ],
   styleUrls: ['./converter.component.scss']
 })
@@ -243,6 +249,20 @@ export class ConverterComponent implements OnInit {
           activeElement.focus();
         }
       });
+  }
+
+  swapCurrencies(index: number): void {
+    if (index < 0 || index >= this.currencyControls.length - 1) {
+      return;
+    }
+
+    [this.currencyControls[index], this.currencyControls[index + 1]] = [
+      this.currencyControls[index + 1],
+      this.currencyControls[index]
+    ];
+
+    this.updateExchangeRates();
+    this.updateFormValues();
   }
 
   private updateExchangeRates(): void {

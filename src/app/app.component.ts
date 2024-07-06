@@ -29,6 +29,10 @@ export class AppComponent implements OnInit {
       'expand',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/expand.svg')
     );
+    iconRegistry.addSvgIcon(
+      'swap',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/swap.svg')
+    );
   }
 
   ngOnInit(): void {

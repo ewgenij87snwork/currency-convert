@@ -97,7 +97,8 @@ export class CalculatorService {
     return rateToIntermediary * rateFromIntermediary;
   }
 
-  private trimToTwoDecimalPlaces(value: number): number {
-    return Math.floor(value * 100) / 100;
+  trimToTwoDecimalPlaces(value: number, digitsAfterPoint = 2): number {
+    const factor = Math.pow(10, digitsAfterPoint);
+    return Math.floor(value * factor) / factor;
   }
 }

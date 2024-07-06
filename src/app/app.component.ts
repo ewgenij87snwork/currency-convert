@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
 import { MatToolbar } from '@angular/material/toolbar';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ConverterComponent } from './components/converter/converter.component';
 import { HeaderComponent } from './components/header/header.component';
 import { CurrencyLabel } from './core/enums/currency-label';
@@ -19,8 +21,15 @@ export class AppComponent implements OnInit {
 
   constructor(
     private httpService: HttpService,
-    private storeService: StoreService
-  ) {}
+    private storeService: StoreService,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
+  ) {
+    iconRegistry.addSvgIcon(
+      'expand',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/expand.svg')
+    );
+  }
 
   ngOnInit(): void {
     this.httpService.getCurrencyData().subscribe((data: ExchangeRate[]) => {

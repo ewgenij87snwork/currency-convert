@@ -3,12 +3,12 @@
   <span class="currency-name">
     {{ CurrencyLabel.USD + '/' + CurrencyLabel.UAH }}
   </span>
-  <span>{{ usdUah.rate }}</span>
+  <span class="currency-rate">{{ usdUah.rate }}</span>
 </div>
 <div class="currency" *ngIf="eurUah && !!eurUah.rate">
   <span class="currency-flag currency-flag-eur"> </span>
   <span class="currency-name">
     {{ CurrencyLabel.EUR + '/' + CurrencyLabel.UAH }}
   </span>
-  <span>{{ eurUah.rate }}</span>
+  <span class="currency-rate">{{ eurUah.rate }}</span>
 </div>

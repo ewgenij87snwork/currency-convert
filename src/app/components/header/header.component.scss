@@ -3,12 +3,11 @@
   gap: 40px;
   color: rgba(0, 0, 0, 0.8);
 
-  .currency-flag {
-    border-radius: 3px;
-    outline: 1px solid rgb(35, 65, 119);
+  .currency-name {
+    color: rgba(255, 255, 255, 0.61);
   }
 
-  .currency-name {
-    color: rgba(0, 0, 0, 0.29);
+  .currency-rate {
+    color: rgb(247 247 247);
   }
 }

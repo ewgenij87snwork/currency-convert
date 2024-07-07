@@ -1,5 +1,7 @@
-<mat-toolbar>
-  <app-header></app-header>
-</mat-toolbar>
-<app-converter></app-converter>
-<app-footer></app-footer>
+<ng-container *ngIf="isDataLoaded">
+  <mat-toolbar>
+    <app-header></app-header>
+  </mat-toolbar>
+  <app-converter></app-converter>
+  <app-footer></app-footer>
+</ng-container>

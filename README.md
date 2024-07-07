@@ -2,6 +2,12 @@
 
 This Angular application allows users to convert between different currencies using up-to-date exchange rates fetched from a public API.
 
+## Demo
+
+https://ewgenij87snwork.github.io/currency-convert/
+
+![Screenshot at Jul 08 02-42-17.png](Screenshot%20at%20Jul%2008%2002-42-17.png)
+
 ## Features
 
 - **Currency Conversion:** Convert between various currencies with real-time exchange rates.

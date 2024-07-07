@@ -1,15 +1,17 @@
-<div *ngIf="usdUah && !!usdUah.rate" class="currency">
-  <mat-icon class="currency-flag currency-flag-usd"></mat-icon>
+<ng-container *ngIf="usdUah && !!usdUah.rate">
+  <div class="currency">
+    <mat-icon class="currency-flag currency-flag-usd"></mat-icon>
 
-  <span class="currency-name">
-    {{ CurrencyLabel.USD + '/' + CurrencyLabel.UAH }}
-  </span>
-  <span class="currency-rate">{{ usdUah.rate }}</span>
-</div>
-<div *ngIf="eurUah && !!eurUah.rate" class="currency">
-  <mat-icon class="currency-flag currency-flag-eur"></mat-icon>
-  <span class="currency-name">
-    {{ CurrencyLabel.EUR + '/' + CurrencyLabel.UAH }}
-  </span>
-  <span class="currency-rate">{{ eurUah.rate }}</span>
-</div>
+    <span class="currency-name">
+      {{ CurrencyLabel.USD + '/' + CurrencyLabel.UAH }}
+    </span>
+    <span class="currency-rate">{{ usdUah.rate }}</span>
+  </div>
+  <div class="currency">
+    <mat-icon class="currency-flag currency-flag-eur"></mat-icon>
+    <span class="currency-name">
+      {{ CurrencyLabel.EUR + '/' + CurrencyLabel.UAH }}
+    </span>
+    <span class="currency-rate">{{ eurUah.rate }}</span>
+  </div>
+</ng-container>

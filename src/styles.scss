@@ -2,6 +2,7 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
 @import 'currency-flags/dist/currency-flags.css';
+
 @include mat.core();
 
 $dark-theme: mat.define-dark-theme(
@@ -20,6 +21,7 @@ $dark-theme: mat.define-dark-theme(
   @include mat.button-color($dark-theme);
   @include mat.all-component-colors($dark-theme);
 }
+
 html,
 body {
   height: 100%;
@@ -35,5 +37,27 @@ body {
 .currency-flag {
   border-radius: 3px;
   box-shadow: 1px 1px 1px 1px rgba(4, 106, 58, 0.85);
-  outline: 1px solid rgba(15, 39, 76, 0.99);
+  outline: 0.5px solid #2c8211;
+}
+
+.mat-mdc-autocomplete-panel.mdc-menu-surface.mdc-menu-surface--open.mat-mdc-autocomplete-visible.mat-primary {
+  background-color: black;
+}
+
+::-webkit-scrollbar {
+  width: 0.5vw;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(99, 99, 99);
+  border-radius: 10px;
+}
+
+* {
+  scrollbar-color: rgba(253, 253, 253, 0.2) #000000;
+  scrollbar-width: thin;
 }

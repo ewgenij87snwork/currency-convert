@@ -15,10 +15,11 @@ This Angular application allows users to convert between different currencies us
 - Angular 18
 - TypeScript
 - Currency-Flags
+- Pre-commit: Prettier, Eslint
 
 ## Run
 
-    ng serve
+    npm run start
 
 ## Usage
 

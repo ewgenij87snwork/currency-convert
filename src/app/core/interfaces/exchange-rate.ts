@@ -5,6 +5,8 @@ export interface ExchangeRate {
 }
 
 export interface ExchangeRateResponse {
-  CurrencyCodeL: string;
-  Amount: number;
+  date: string;
+  uah: {
+    [currencyCode: string]: number;
+  };
 }

@@ -1,6 +1,7 @@
 import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { CurrencyLabel } from '../../core/enums/currency-label';
 import { ExchangeRate } from '../../core/interfaces/exchange-rate';
 import { CalculatorService } from '../../core/services/calculator.service';
@@ -9,7 +10,7 @@ import { StoreService } from '../../core/services/store.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MatButton, NgIf],
+  imports: [MatButton, NgIf, MatIcon],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

@@ -4,11 +4,27 @@
   color: rgba(0, 0, 0, 0.8);
   font-weight: 300;
 
+  .currency {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .currency-name {
     color: rgba(255, 255, 255, 0.61);
   }
 
   .currency-rate {
     color: rgba(247, 247, 247, 0.9);
+    margin: 15px;
+  }
+
+  mat-icon {
+    display: block;
+    position: relative;
+    top: -2px;
+    height: 24px;
+    width: 32px;
+    margin-right: 10px;
   }
 }

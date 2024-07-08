@@ -4,11 +4,12 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: calc(100vh - 100px);
   background: #000;
 
   form {
-    margin-top: -10%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    box-sizing: border-box;
 
     mat-card {
       max-width: 300px;
@@ -23,7 +24,6 @@
         padding: 16px 16px 0;
 
         mat-card-title {
-          margin-bottom: 30px;
           font-weight: 300;
           color: rgba(255, 255, 255, 0.4);
         }
@@ -186,4 +186,12 @@
 }
 ::ng-deep.mat-mdc-option {
   padding-left: 10px !important;
+}
+
+@media screen and (max-width: 600px) {
+  .exchange-rate {
+    span {
+      left: 50px;
+    }
+  }
 }

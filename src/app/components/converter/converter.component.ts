@@ -111,7 +111,7 @@ export class ConverterComponent implements OnInit {
   }
 
   addCurrency(initialLabel?: CurrencyLabel, initialAmount?: number): void {
-    if (this.currencyControls.length > 5) return;
+    if (this.currencyControls.length > 10) return;
     const newCurrency: ControlCurrency = {
       amount: initialAmount || 1,
       label: {

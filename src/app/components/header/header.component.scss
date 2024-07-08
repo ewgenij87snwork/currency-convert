@@ -28,3 +28,23 @@
     margin-right: 10px;
   }
 }
+
+@media screen and (max-width: 600px) {
+  :host {
+    display: block;
+    position: relative;
+    top: 10px;
+
+    .currency {
+      margin-top: 10px;
+    }
+    .currency-rate,
+    .currency-name {
+      margin-bottom: 0;
+    }
+
+    .currency-rate {
+      margin-top: 0;
+    }
+  }
+}
